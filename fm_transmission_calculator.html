@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive FM Transmission Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .math-font { font-family: 'Roboto Mono', monospace; }
+        .input-group input {
+            transition: all 0.2s ease-in-out;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8 flex items-center justify-center">
+
+    <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        
+        <!-- Header -->
+        <div class="bg-blue-900 text-white p-6 md:p-8 text-center border-b-4 border-blue-500">
+            <h1 class="text-2xl md:text-3xl font-bold mb-2 tracking-tight">FM Transmission Link Calculator</h1>
+            <p class="text-blue-200 text-sm md:text-base">Academic utility for evaluating Frequency Modulation parameters.</p>
+        </div>
+
+        <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Input Parameters -->
+            <div class="lg:col-span-5 space-y-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">Known Parameters</h2>
+                    <p class="text-sm text-slate-500 mb-4">Input your localized transmitter constraints below:</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Am -->
+                    <div class="input-group">
+                        <label for="am" class="block text-sm font-medium text-slate-700 mb-1">Message Amplitude (A<sub>m</sub>)</label>
+                        <div class="relative">
+                            <input type="number" id="am" step="0.1" value="2.0" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg py-2.5 px-4 pr-12 focus:bg-white" placeholder="e.g. 2.0">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500 font-medium text-sm">V</div>
+                        </div>
+                    </div>
+
+                    <!-- fm -->
+                    <div class="input-group">
+                        <label for="fm" class="block text-sm font-medium text-slate-700 mb-1">Message Frequency (f<sub>m</sub>)</label>
+                        <div class="relative">
+                            <input type="number" id="fm" step="0.1" value="15.0" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg py-2.5 px-4 pr-12 focus:bg-white" placeholder="e.g. 15.0">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500 font-medium text-sm">kHz</div>
+                        </div>
+                    </div>
+
+                    <!-- kf -->
+                    <div class="input-group">
+                        <label for="kf" class="block text-sm font-medium text-slate-700 mb-1">Modulator Sensitivity (k<sub>f</sub>)</label>
+                        <div class="relative">
+                            <input type="number" id="kf" step="0.1" value="25.0" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg py-2.5 px-4 pr-16 focus:bg-white" placeholder="e.g. 25.0">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500 font-medium text-sm">kHz/V</div>
+                        </div>
+                    </div>
+
+                    <!-- Ac -->
+                    <div class="input-group">
+                        <label for="ac" class="block text-sm font-medium text-slate-700 mb-1">Carrier Amplitude (A<sub>c</sub>)</label>
+                        <div class="relative">
+                            <input type="number" id="ac" step="1" value="100" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg py-2.5 px-4 pr-12 focus:bg-white" placeholder="e.g. 100">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500 font-medium text-sm">V</div>
+                        </div>
+                    </div>
+
+                    <!-- R -->
+                    <div class="input-group">
+                        <label for="r" class="block text-sm font-medium text-slate-700 mb-1">Antenna Resistance (R)</label>
+                        <div class="relative">
+                            <input type="number" id="r" step="1" value="50" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg py-2.5 px-4 pr-12 focus:bg-white" placeholder="e.g. 50">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500 font-medium text-sm">Ω</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calculateMetrics()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
+                    </svg>
+                    Generate Mathematical Proof
+                </button>
+            </div>
+
+            <!-- Right Column: Mathematical Output -->
+            <div class="lg:col-span-7 flex flex-col h-full">
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex justify-between items-center">
+                        <span>Computational Output</span>
+                        <button onclick="copyResults()" class="text-sm text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition" title="Copy to clipboard">
+                            Copy to Document
+                        </button>
+                    </h2>
+                </div>
+                
+                <div id="error-box" class="hidden mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r text-red-700 text-sm">
+                    Please ensure all input fields contain valid positive numbers.
+                </div>
+
+                <!-- Results Display Area -->
+                <div id="results-box" class="flex-grow bg-[#f8fafc] border border-slate-200 rounded-xl p-5 md:p-6 shadow-inner math-font text-sm md:text-base leading-relaxed text-slate-700 overflow-y-auto">
+                    <!-- Dynamic content injected here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function formatNumber(num) {
+            return Number.isInteger(num) ? num.toString() : num.toFixed(2);
+        }
+
+        function calculateMetrics() {
+            // Retrieve inputs
+            const am = parseFloat(document.getElementById('am').value);
+            const fm = parseFloat(document.getElementById('fm').value);
+            const kf = parseFloat(document.getElementById('kf').value);
+            const ac = parseFloat(document.getElementById('ac').value);
+            const r = parseFloat(document.getElementById('r').value);
+            
+            const errorBox = document.getElementById('error-box');
+            const resultsBox = document.getElementById('results-box');
+
+            // Validation
+            if (isNaN(am) || isNaN(fm) || isNaN(kf) || isNaN(ac) || isNaN(r) || fm <= 0 || r <= 0) {
+                errorBox.classList.remove('hidden');
+                resultsBox.innerHTML = '';
+                return;
+            }
+            errorBox.classList.add('hidden');
+
+            // Calculations
+            const deltaF = kf * am;
+            const beta = deltaF / fm;
+            const bw = 2 * (deltaF + fm);
+            const pt = (Math.pow(ac, 2)) / (2 * r);
+
+            // Constructing the HTML output with clean mathematical formatting
+            const htmlOutput = `
+<div class="space-y-6">
+    <!-- Step 1 -->
+    <div>
+        <div class="font-bold text-blue-900 mb-1 font-sans">1. Frequency Deviation (&Delta;f)</div>
+        <div class="pl-4 border-l-2 border-blue-300 space-y-1">
+            <div class="text-slate-500">Formula: &Delta;f = k<sub>f</sub> &times; A<sub>m</sub></div>
+            <div class="text-slate-800">&Delta;f = ${formatNumber(kf)} &times; ${formatNumber(am)}</div>
+            <div class="font-bold text-black">&Delta;f = ${formatNumber(deltaF)} kHz</div>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div>
+        <div class="font-bold text-blue-900 mb-1 font-sans">2. Modulation Index (&beta;)</div>
+        <div class="pl-4 border-l-2 border-blue-300 space-y-1">
+            <div class="text-slate-500">Formula: &beta; = &Delta;f / f<sub>m</sub></div>
+            <div class="text-slate-800">&beta; = ${formatNumber(deltaF)} / ${formatNumber(fm)}</div>
+            <div class="font-bold text-black">&beta; = ${formatNumber(beta)}</div>
+            <div class="text-xs text-slate-500 mt-1 italic">${beta < 1 ? '[Narrowband FM - Suitable for Emergency Comms]' : '[Wideband FM - High Spectral Cost]'}</div>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div>
+        <div class="font-bold text-blue-900 mb-1 font-sans">3. Transmission Bandwidth (BW)</div>
+        <div class="pl-4 border-l-2 border-blue-300 space-y-1">
+            <div class="text-slate-500">Formula: BW &approx; 2(&Delta;f + f<sub>m</sub>) <span class="text-xs">[Carson's Rule]</span></div>
+            <div class="text-slate-800">BW &approx; 2(${formatNumber(deltaF)} + ${formatNumber(fm)})</div>
+            <div class="font-bold text-black">BW &approx; ${formatNumber(bw)} kHz</div>
+        </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div>
+        <div class="font-bold text-blue-900 mb-1 font-sans">4. Total Transmission Power (P<sub>t</sub>)</div>
+        <div class="pl-4 border-l-2 border-blue-300 space-y-1">
+            <div class="text-slate-500">Formula: P<sub>t</sub> = A<sub>c</sub><sup>2</sup> / (2R)</div>
+            <div class="text-slate-800">P<sub>t</sub> = ${formatNumber(ac)}<sup>2</sup> / (2 &times; ${formatNumber(r)})</div>
+            <div class="text-slate-800">P<sub>t</sub> = ${formatNumber(ac * ac)} / ${formatNumber(2 * r)}</div>
+            <div class="font-bold text-black">P<sub>t</sub> = ${formatNumber(pt)} Watts</div>
+        </div>
+    </div>
+</div>`;
+
+            resultsBox.innerHTML = htmlOutput;
+        }
+
+        // Copy plain text logic for pasting into Word docs
+        function copyResults() {
+            const resultsBox = document.getElementById('results-box');
+            if(!resultsBox.innerHTML.trim()) {
+                alert("Please click 'Generate Mathematical Proof' first.");
+                return;
+            }
+
+            const am = formatNumber(parseFloat(document.getElementById('am').value));
+            const fm = formatNumber(parseFloat(document.getElementById('fm').value));
+            const kf = formatNumber(parseFloat(document.getElementById('kf').value));
+            const ac = formatNumber(parseFloat(document.getElementById('ac').value));
+            const r = formatNumber(parseFloat(document.getElementById('r').value));
+            
+            const deltaF = formatNumber(parseFloat(document.getElementById('kf').value) * parseFloat(document.getElementById('am').value));
+            const beta = formatNumber(parseFloat(deltaF) / parseFloat(document.getElementById('fm').value));
+            const bw = formatNumber(2 * (parseFloat(deltaF) + parseFloat(document.getElementById('fm').value)));
+            const pt = formatNumber(Math.pow(parseFloat(document.getElementById('ac').value), 2) / (2 * parseFloat(document.getElementById('r').value)));
+
+            const textToCopy = 
+`1. Frequency Deviation (Δf)
+Formula: Δf = kf * Am
+Calculation: Δf = ${kf} * ${am} = ${deltaF} kHz
+
+2. Modulation Index (β)
+Formula: β = Δf / fm
+Calculation: β = ${deltaF} / ${fm} = ${beta}
+
+3. Transmission Bandwidth (BW)
+Formula: BW ≈ 2(Δf + fm) [Carson's Rule]
+Calculation: BW ≈ 2(${deltaF} + ${fm}) = ${bw} kHz
+
+4. Total Transmission Power (Pt)
+Formula: Pt = Ac^2 / (2 * R)
+Calculation: Pt = ${ac}^2 / (2 * ${r}) = ${pt} Watts`;
+
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = textToCopy;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            // Visual feedback on the button
+            const btn = document.querySelector('button[onclick="copyResults()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            btn.classList.add('bg-green-100', 'text-green-800');
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('bg-green-100', 'text-green-800');
+            }, 2000);
+        }
+
+        // Initialize with default calculations
+        document.addEventListener('DOMContentLoaded', calculateMetrics);
+    </script>
+</body>
+</html>
